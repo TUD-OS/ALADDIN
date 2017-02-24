@@ -1,4 +1,5 @@
 SRCS=pp_scan.c
+INCS=pp_scan.h
 
 ACCEL_NAME = pp_scan
 TEST_BIN = $(ACCEL_NAME)

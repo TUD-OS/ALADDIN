@@ -2,7 +2,7 @@
 
 all: $(ACCEL_NAME)
 
-$(ACCEL_NAME): $(SRCS)
+$(ACCEL_NAME): $(SRCS) $(INCS)
 	$(CC) $(CFLAGS) -o $(ACCEL_NAME) $(SRCS)
 
 run: $(ACCEL_NAME)

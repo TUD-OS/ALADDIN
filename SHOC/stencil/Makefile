@@ -1,4 +1,5 @@
 SRCS=stencil.c
+INCS=stencil.h
 
 ACCEL_NAME = stencil
 TEST_BIN = $(ACCEL_NAME)

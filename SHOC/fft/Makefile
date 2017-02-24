@@ -1,4 +1,5 @@
 SRCS=fft.c
+INCS=fft.h
 
 ACCEL_NAME = fft
 TEST_BIN = $(ACCEL_NAME)

@@ -1,4 +1,5 @@
 SRCS=reduction.c
+INCS=reduction.h
 
 ACCEL_NAME = reduction
 TEST_BIN = $(ACCEL_NAME)

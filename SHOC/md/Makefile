@@ -1,4 +1,5 @@
 SRCS=md.c
+INCS=md.h
 
 ACCEL_NAME = md
 TEST_BIN = $(ACCEL_NAME)

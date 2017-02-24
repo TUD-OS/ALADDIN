@@ -1,4 +1,5 @@
 SRCS=triad.c
+INCS=triad.h
 
 ACCEL_NAME = triad
 TEST_BIN = $(ACCEL_NAME)

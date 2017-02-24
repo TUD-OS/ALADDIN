@@ -1,4 +1,5 @@
 SRCS=bb_gemm.c
+INCS=bb_gemm.h
 
 ACCEL_NAME = bb_gemm
 TEST_BIN = $(ACCEL_NAME)

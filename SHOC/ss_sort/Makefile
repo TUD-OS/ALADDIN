@@ -1,4 +1,5 @@
 SRCS=ss_sort.c
+INCS=ss_sort.h
 
 ACCEL_NAME = ss_sort
 TEST_BIN = $(ACCEL_NAME)
