@@ -1,6 +1,6 @@
 #### NOTES ####
-# Define ACCEL_NAME, TRACER_HOME, ALADDIN_HOME, WORKLOAD, SRCS before including
-# this.
+# Define ACCEL_NAME, TRACER_HOME, ALADDIN_HOME, LLVM_HOME, LLVM_VERSION, WORKLOAD, SRCS
+# before including this.
 ###############
 
 CURRENT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
@@ -55,22 +55,22 @@ labelmap: $(SRCS)
 	$(GET_LABELED_STMTS) $(SRCS) -- -I$(LLVM_HOME)/lib/clang/$(LLVM_VERSION)/include $(CPPFLAGS)
 
 full.llvm: $(LLVM_OBJS)
-	llvm-link -o $@ $^ $(LOGGER)
+	$(LLVM_HOME)/bin/llvm-link -o $@ $^ $(LOGGER)
 
 full.s: full.llvm
-	llc -O0 -disable-fp-elim -filetype=asm -o $@ $<
+	$(LLVM_HOME)/bin/llc -O0 -disable-fp-elim -filetype=asm -o $@ $<
 
 $(EXEC)-instrumented: full.s
 	$(CXX) -O0 -fno-inline -o $@ $< -lm -lz
 
 %-opt.llvm: %.c labelmap
-	clang -g -O1 -S -fno-slp-vectorize -fno-vectorize -fno-unroll-loops \
+	$(LLVM_HOME)/bin/clang -g -O1 -S -fno-slp-vectorize -fno-vectorize -fno-unroll-loops \
         -fno-inline -fno-builtin \
 				-emit-llvm \
 				$(CPPFLAGS) \
         $(BMARK_SPECIFIC_CFLAGS) \
         -o $*.llvm $<
-	opt -S -load=$(TRACER) -fulltrace -labelmapwriter $*.llvm -o $@
+	$(LLVM_HOME)/bin/opt -S -load=$(TRACER) -fulltrace -labelmapwriter $*.llvm -o $@
 
 clean-trace:
 	rm -rf $(COMMON_TEMP_DIR)
