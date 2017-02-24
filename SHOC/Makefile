@@ -6,6 +6,7 @@ BENCHMARKS=\
 	md \
 	pp_scan \
 	reduction \
+	sha256 \
 	ss_sort \
 	stencil \
 	triad

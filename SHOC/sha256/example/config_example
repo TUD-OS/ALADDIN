@@ -1,0 +1,9 @@
+partition,cyclic,data,64,1,4
+partition,cyclic,m,256,4,4
+partition,cyclic,k,256,4,2
+partition,cyclic,ctx,109,1,1
+unrolling,sha256_transform,loop1,1
+unrolling,sha256_transform,loop2,4
+unrolling,sha256_transform,loop3,2
+pipelining,1
+cycle_time,10
