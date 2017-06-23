@@ -5,8 +5,8 @@
 #define THREADS 64
 
 //#define TYPE double
-//#define TYPE float
-#define TYPE int
+#define TYPE float
+//#define TYPE int
 
 /*typedef struct complex_t {*/
 /*TYPE x;*/
