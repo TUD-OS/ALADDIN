@@ -3,6 +3,7 @@
 BENCHMARKS=\
 	bb_gemm \
 	fft \
+	fft2d \
 	md \
 	pp_scan \
 	reduction \
