@@ -17,8 +17,8 @@ run() {
     echo "done"
 }
 
-OUTER="16 32 64 128"
-INNER="8 16 32 64"
+OUTER="2 4 8 16 32 64 128"
+INNER="2 4 8 16 32"
 
 for outer in $OUTER; do
     for inner in $INNER; do
@@ -26,7 +26,6 @@ for outer in $OUTER; do
 partition,cyclic,rbuf,64,4,$inner
 partition,cyclic,ibuf,64,4,$inner
 partition,cyclic,c,2048,8,$inner
-unrolling,fsqrt,loop1,1
 unrolling,FFT,loop1,$outer
 unrolling,FFT,loop2,$inner
 unrolling,FFT,loop3,$outer
@@ -34,12 +33,6 @@ unrolling,FFT,loop4,$outer
 unrolling,FFT,loop5,$outer
 unrolling,FFT,loop6,$inner
 unrolling,FFT,loop7,$inner
-unrolling,FFT2D,loop1,1
-unrolling,FFT2D,loop2,$inner
-unrolling,FFT2D,loop3,$inner
-unrolling,FFT2D,loop4,1
-unrolling,FFT2D,loop5,$inner
-unrolling,FFT2D,loop6,$inner
 pipelining,1
 cycle_time,10
 EOF

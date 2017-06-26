@@ -2,16 +2,23 @@
 
 #include "fft2d.h"
 
-static float fsqrt(const float fg)
+static float fsqrt(const float x)
 {
-   float n = fg / 2.0;
-   float lstX = 0.0;
-   loop1: while(n != lstX)
+   union
    {
-      lstX = n;
-      n = (n + fg / n) / 2.0;
-   }
-   return n;
+      int i;
+      float x;
+   } u;
+   u.x = x;
+   u.i = (1<<29) + (u.i >> 1) - (1<<22);
+
+   // Two Babylonian Steps (simplified from:)
+   // u.x = 0.5f * (u.x + x/u.x);
+   // u.x = 0.5f * (u.x + x/u.x);
+   u.x =       u.x + x/u.x;
+   u.x = 0.25f*u.x + x/u.x;
+
+   return u.x;
 }
 
 // source: http://paulbourke.net/miscellaneous/dft/
@@ -71,14 +78,14 @@ static int FFT(int dir,int m,float *rbuf,float *ibuf)
    }
 
    /* Compute the FFT */
-   c1 = -1.0;
-   c2 = 0.0;
+   c1 = -1.0f;
+   c2 = 0.0f;
    l2 = 1;
    loop4: for (l=0;l<m;l++) {
       l1 = l2;
       l2 <<= 1;
-      u1 = 1.0;
-      u2 = 0.0;
+      u1 = 1.0f;
+      u2 = 0.0f;
       loop5: for (j=0;j<l1;j++) {
          loop6: for (i=j;i<nn;i+=l2) {
             i1 = i + l1;
@@ -93,10 +100,10 @@ static int FFT(int dir,int m,float *rbuf,float *ibuf)
          u2 = u1 * c2 + u2 * c1;
          u1 = z;
       }
-      c2 = fsqrt((1.0 - c1) / 2.0);
+      c2 = fsqrt((1.0f - c1) / 2.0f);
       if (dir == 1)
          c2 = -c2;
-      c1 = fsqrt((1.0 + c1) / 2.0);
+      c1 = fsqrt((1.0f + c1) / 2.0f);
    }
 
    /* Scaling for forward transform */
