@@ -1,0 +1,7 @@
+partition,cyclic,orig,4096,4,4
+partition,cyclic,sol,4096,4,4
+partition,cyclic,filter,36,4,4
+unrolling,stencil,outer,4
+unrolling,stencil,inner,4
+pipelining,1
+cycle_time,10
