@@ -1,0 +1,8 @@
+partition,cyclic,x,4096,4,8
+partition,cyclic,y,4096,4,8
+partition,cyclic,z,4096,4,8
+unrolling,do_bb_gemm,loopi,8
+unrolling,do_bb_gemm,loopk,1
+unrolling,do_bb_gemm,loopj,8
+pipelining,1
+cycle_time,10

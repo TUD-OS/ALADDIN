@@ -4,7 +4,7 @@
 #include "gem5/dma_interface.h"
 #endif
 
-void bb_gemm(int x[N], int y[N], int z[N]){
+void do_bb_gemm(int x[N], int y[N], int z[N]){
 #ifdef DMA_MODE
   dmaLoad(&x[0], 0, ROWSIZE*BLOCKSIZE*sizeof(int));
   dmaLoad(&y[0], 0, BLOCKSIZE*BLOCKSIZE*sizeof(int));
@@ -55,7 +55,7 @@ int main()
 #ifdef GEM5
   resetGem5Stats();
 #endif
-	bb_gemm(x, y, z);
+	do_bb_gemm(x, y, z);
 #ifdef GEM5
   dumpGem5Stats("bb_gemm");
 #endif
