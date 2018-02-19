@@ -786,6 +786,8 @@ size_t DDDG::build_initial_dddg(size_t trace_off, size_t trace_size) {
       }
       first_function_returned = is_function_returned(line_left, first_function);
       parse_instruction_line(line_left);
+      if(first_function_returned)
+        break;
     } else if (tag.compare("r") == 0) {
       parse_result(line_left);
     } else if (tag.compare("f") == 0) {
