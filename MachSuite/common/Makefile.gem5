@@ -14,7 +14,8 @@ CFLAGS = -O3 -Wall -Wno-unused-label -I../../common
 ALL_SRCS = $(SRCS) ../../common/harness.c
 
 # -mno-sse
-GEM5_CFLAGS = -static -O3 -mno-80387 -msoft-float \
+# -mno-80387 -msoft-float
+GEM5_CFLAGS = -static -O3 \
               -march=nocona -msse -mfpmath=sse \
               -fno-exceptions -fno-inline
 
