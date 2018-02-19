@@ -3,7 +3,7 @@
 #include "support.h"
 
 //Define input sizes
-#define col_size 64
+#define col_size 128
 #define row_size 128
 #define f_size 9
 
