@@ -19,6 +19,23 @@
 /SHOC/*/example/out.csv
 /SHOC/*/example/*_summary
 
+/MachSuite/aes/*/aes
+/MachSuite/backprop/*/backprop
+/MachSuite/bfs/*/bfs
+/MachSuite/fft/*/fft
+/MachSuite/kmp/*/kmp
+/MachSuite/md/*/md
+/MachSuite/nw/*/nw
+/MachSuite/sort/*/sort
+/MachSuite/spmv/*/spmv
+/MachSuite/stencil/*/stencil
+
+/MachSuite/*/*/*-instrumented
+/MachSuite/*/*/*-gem5-accel
+/MachSuite/*/*/labelmap
+/MachSuite/*/*/output.data
+/MachSuite/*/*/generate
+
 *.o
 *.llvm
 *.s
