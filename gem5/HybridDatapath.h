@@ -27,10 +27,13 @@
 #include "Gem5Datapath.h"
 #include "MemoryQueue.h"
 
+#include "cpu/dtu-accel/connector.hh"
+
 #include "debug/HybridDatapath.hh"
 #include "params/HybridDatapath.hh"
 
 #define DMA_SUPPORT       0
+#define SIGNAL_CONNECTOR  1
 
 class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
 
@@ -468,6 +471,8 @@ class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
   SpadPort spadPort;
   MasterID spadMasterId;
 #endif
+
+  DtuAccelConnector *connector;
 
   // Coherent port to the cache.
   CachePort cachePort;

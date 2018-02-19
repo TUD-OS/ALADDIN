@@ -46,6 +46,7 @@ HybridDatapath::HybridDatapath(const HybridDatapathParams* params)
                params->invalidateOnDmaStore),
       spadMasterId(params->system->getMasterId(name() + ".spad")),
 #endif
+      connector(params->connector),
       cachePort(this, "cache_port"),
       cacheMasterId(params->system->getMasterId(name() + ".cache")),
       acpPort(this, "acp_port"),
@@ -474,7 +475,7 @@ bool HybridDatapath::handleReadyBitAccess(ExecNode* node) {
   } catch (UnknownArrayException& e) {
     fatal("At node %d: tried to set ready bits on array \"%s\", which does not "
           "exist!\n", node->get_node_id(), array_name);
-  } 
+  }
   return true;
 }
 
@@ -860,6 +861,9 @@ void HybridDatapath::addDmaNodeToIssueQueue(unsigned node_id) {
 }
 
 void HybridDatapath::sendFinishedSignal() {
+#if SIGNAL_CONNECTOR
+  connector->signalFinished();
+#else
   Request::Flags flags = 0;
   size_t size = 4;  // 32 bit integer.
   uint8_t* data = new uint8_t[size];
@@ -881,6 +885,7 @@ void HybridDatapath::sendFinishedSignal() {
   } else {
     DPRINTF(HybridDatapath, "Sent finished signal.\n");
   }
+#endif
 }
 
 void HybridDatapath::CachePort::recvReqRetry() {

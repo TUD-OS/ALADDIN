@@ -3,6 +3,7 @@ from m5.objects import CommMonitor, Cache, MemTraceProbe
 from MemObject import MemObject
 from m5.proxy import *
 from Cache import *
+from DtuAccel import DtuAccelConnector
 
 class AcpCache(Cache):
   """ A small L1 cache that handles coherency logic on ACP's behalf.
@@ -29,6 +30,8 @@ class HybridDatapath(MemObject):
   cxx_header = "aladdin/gem5/HybridDatapath.h"
   # MemObject is assumed to be a parent.
   cxx_bases = ["ScratchpadDatapath"]
+
+  connector = Param.DtuAccelConnector("The connector")
 
   benchName = Param.String("Aladdin accelerator name.")
   outputPrefix = Param.String("Aladdin output prefix.")
