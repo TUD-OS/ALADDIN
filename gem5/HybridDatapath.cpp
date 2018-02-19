@@ -352,7 +352,7 @@ bool HybridDatapath::step() {
     schedule(tickEvent, clockEdge(Cycles(1)));
     return true;
   } else {
-    dumpStats();
+    // dumpStats();
     DPRINTF(Aladdin, "Accelerator completed.\n");
     if (execute_standalone) {
       // If in standalone mode, we wait dmaSetupOverhead before the datapath
