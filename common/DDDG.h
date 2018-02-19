@@ -142,7 +142,7 @@ class Value {
       : vector_buf(std::move(other.vector_buf)), data(other.data),
         type(other.type), size(other.size) {}
 
-  Value(char* value_buf, unsigned _size) : size(_size / 8), vector_buf() {
+  Value(char* value_buf, unsigned _size) : vector_buf(), size(_size / 8) {
     createValue(value_buf);
   }
 
