@@ -30,6 +30,8 @@
 #include "debug/HybridDatapath.hh"
 #include "params/HybridDatapath.hh"
 
+#define DMA_SUPPORT       0
+
 class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
 
  public:
@@ -49,18 +51,22 @@ class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
   // Start scheduling datapath
   void startDatapathScheduling(int delay = 1);
 
+#if DMA_SUPPORT
   virtual MasterPort& getDataPort() {
     return spadPort;
   };
+#endif
   virtual MasterPort& getCachePort() {
     return cachePort;
   };
   virtual MasterPort& getAcpPort() {
     return acpPort;
   };
+#if DMA_SUPPORT
   MasterID getSpadMasterId() {
     return spadMasterId;
   };
+#endif
   MasterID getCacheMasterId() {
     return cacheMasterId;
   };
@@ -152,6 +158,7 @@ class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
   /* This port has to accept snoops but it doesn't need to do anything. See
    * arch/arm/table_walker.hh
    */
+#if DMA_SUPPORT
   class SpadPort : public DmaPort {
    public:
     SpadPort(HybridDatapath* dev, System* s, unsigned _max_req,
@@ -170,6 +177,7 @@ class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
     virtual bool isSnooping() const { return true; }
     HybridDatapath* datapath;
   };
+#endif
 
   // Port for cache coherent memory accesses. This implementation does not
   // support functional or atomic accesses.
@@ -455,9 +463,11 @@ class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
   // Number of cycles required for the CPU to initiate a DMA transfer.
   unsigned dmaSetupOverhead;
 
+#if DMA_SUPPORT
   // DMA port to the scratchpad.
   SpadPort spadPort;
   MasterID spadMasterId;
+#endif
 
   // Coherent port to the cache.
   CachePort cachePort;

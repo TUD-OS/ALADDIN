@@ -37,6 +37,7 @@ HybridDatapath::HybridDatapath(const HybridDatapathParams* params)
                    params->acceleratorId,
                    params->executeStandalone,
                    params->system),
+#if DMA_SUPPORT
       spadPort(this,
                params->system,
                params->maxDmaRequests,
@@ -44,6 +45,7 @@ HybridDatapath::HybridDatapath(const HybridDatapathParams* params)
                params->numDmaChannels,
                params->invalidateOnDmaStore),
       spadMasterId(params->system->getMasterId(name() + ".spad")),
+#endif
       cachePort(this, "cache_port"),
       cacheMasterId(params->system->getMasterId(name() + ".cache")),
       acpPort(this, "acp_port"),
@@ -158,9 +160,12 @@ void HybridDatapath::startDatapathScheduling(int delay) {
 
 BaseMasterPort& HybridDatapath::getMasterPort(const std::string& if_name,
                                               PortID idx) {
+#if DMA_SUPPORT
   if (if_name == "spad_port")
     return getDataPort();
-  else if (if_name == "cache_port")
+  else
+#endif
+  if (if_name == "cache_port")
     return getCachePort();
   else if (if_name == "acp_port")
     return getAcpPort();
@@ -832,9 +837,11 @@ void HybridDatapath::issueDmaRequest(unsigned node_id) {
     }
   }
 
+#if DMA_SUPPORT
   DmaEvent* dma_event = new DmaEvent(this, node_id);
   spadPort.dmaAction(
       cmd, translation.paddr, size, dma_event, data, 0, flags);
+#endif
 }
 
 /* Mark the DMA request node as having completed. */
@@ -1194,6 +1201,7 @@ void HybridDatapath::updateCacheRequestStatusOnRetry(PacketPtr pkt) {
   }
 }
 
+#if DMA_SUPPORT
 /* Receiving response from DMA. */
 bool HybridDatapath::SpadPort::recvTimingResp(PacketPtr pkt) {
   if (pkt->cmd == MemCmd::InvalidateResp) {
@@ -1258,6 +1266,7 @@ void HybridDatapath::DmaEvent::process() {
 const char* HybridDatapath::DmaEvent::description() const {
   return "Hybrid DMA datapath receiving request event";
 }
+#endif
 
 void HybridDatapath::resetCacheCounters() {
   dtb.resetRequestCounter();
