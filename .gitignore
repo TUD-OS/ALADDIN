@@ -36,6 +36,12 @@
 /MachSuite/*/*/output.data
 /MachSuite/*/*/generate
 
+/integration-test/with-cpu/test_aes/aes
+/integration-test/with-cpu/test_fft/fft
+/integration-test/with-cpu/test_md/md
+/integration-test/with-cpu/test_spmv/spmv
+/integration-test/with-cpu/test_stencil/stencil
+
 *.o
 *.llvm
 *.s
