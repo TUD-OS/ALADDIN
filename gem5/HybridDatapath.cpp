@@ -8,7 +8,7 @@
 #include "base/flags.hh"
 #include "base/trace.hh"
 #include "base/types.hh"
-#include "base/logging.hh"
+#include "base/misc.hh"
 #include "dev/dma_device.hh"
 #include "mem/mem_object.hh"
 #include "mem/packet.hh"
