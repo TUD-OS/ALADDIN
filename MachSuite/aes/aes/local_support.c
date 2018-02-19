@@ -25,7 +25,7 @@ void run_benchmark( void *vargs ) {
 %%: Section 1
 uint8_t[32]: key
 %%: Section 2
-uint8_t[16]: input-text
+uint8_t[DATA_LEN]: input-text
 */
 
 void input_to_data(int fd, void *vdata) {
@@ -40,7 +40,7 @@ void input_to_data(int fd, void *vdata) {
   parse_uint8_t_array(s, data->k, 32);
   // Section 2: input-text
   s = find_section_start(p,2);
-  parse_uint8_t_array(s, data->buf, 16);
+  parse_uint8_t_array(s, data->buf, DATA_LEN);
 }
 
 void data_to_input(int fd, void *vdata) {
@@ -50,12 +50,12 @@ void data_to_input(int fd, void *vdata) {
   write_uint8_t_array(fd, data->k, 32);
   // Section 2
   write_section_header(fd);
-  write_uint8_t_array(fd, data->buf, 16);
+  write_uint8_t_array(fd, data->buf, DATA_LEN);
 }
 
 /* Output format:
 %% Section 1
-uint8_t[16]: output-text
+uint8_t[DATA_LEN]: output-text
 */
 
 void output_to_data(int fd, void *vdata) {
@@ -68,14 +68,14 @@ void output_to_data(int fd, void *vdata) {
   p = readfile(fd);
   // Section 1: output-text
   s = find_section_start(p,1);
-  parse_uint8_t_array(s, data->buf, 16);
+  parse_uint8_t_array(s, data->buf, DATA_LEN);
 }
 
 void data_to_output(int fd, void *vdata) {
   struct bench_args_t *data = (struct bench_args_t *)vdata;
   // Section 1
   write_section_header(fd);
-  write_uint8_t_array(fd, data->buf, 16);
+  write_uint8_t_array(fd, data->buf, DATA_LEN);
 }
 
 int check_data( void *vdata, void *vref ) {
@@ -84,7 +84,7 @@ int check_data( void *vdata, void *vref ) {
   int has_errors = 0;
 
   // Exact compare encrypted output buffers
-  has_errors |= memcmp(&data->buf, &ref->buf, 16*sizeof(uint8_t));
+  has_errors |= memcmp(&data->buf, &ref->buf, DATA_LEN*sizeof(uint8_t));
 
   // Return true if it's correct.
   return !has_errors;

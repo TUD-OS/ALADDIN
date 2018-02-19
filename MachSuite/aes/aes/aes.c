@@ -177,45 +177,55 @@ uint8_t aes_expandEncKey(uint8_t *k, uint8_t rc)
     return rc;
 } /* aes_expandEncKey */
 
-/* -------------------------------------------------------------------------- */
-void aes256_encrypt_ecb(aes256_context *ctx, uint8_t k[32], uint8_t buf[16])
+void inner_loop(aes256_context *ctx, uint8_t k[32], uint8_t buf[DATA_LEN], size_t off, int iter)
 {
-    //INIT
     uint8_t rcon = 1;
     uint8_t i;
 
-#ifdef DMA_MODE
-    dmaLoad(&k[0], 0, 32 * sizeof(uint8_t));
-    dmaLoad(&buf[0], 0, 16 * sizeof(uint8_t));
-#endif
-
-    ecb1 : for (i = 0; i < sizeof(ctx->key); i++){
-        ctx->enckey[i] = ctx->deckey[i] = k[i];
-    }
-    ecb2 : for (i = 8;--i;){
-        rcon = aes_expandEncKey(ctx->deckey, rcon);
-    }
-
-    //DEC
-    aes_addRoundKey_cpy(buf, ctx->enckey, ctx->key);
-    ecb3 : for(i = 1, rcon = 1; i < 14; ++i)
-    {
-        aes_subBytes(buf);
-        aes_shiftRows(buf);
-        aes_mixColumns(buf);
-        if( i & 1 ) {
-          aes_addRoundKey( buf, &ctx->key[16]);
-        } else {
-          rcon = aes_expandEncKey(ctx->key, rcon);
-          aes_addRoundKey(buf, ctx->key);
+    if (iter == 0) {
+        ecb1 : for (i = 0; i < sizeof(ctx->key); i++){
+            ctx->enckey[i] = ctx->deckey[i] = k[i];
+        }
+        ecb2 : for (i = 8;--i;){
+            rcon = aes_expandEncKey(ctx->deckey, rcon);
         }
     }
-    aes_subBytes(buf);
-    aes_shiftRows(buf);
-    rcon = aes_expandEncKey(ctx->key, rcon);
-    aes_addRoundKey(buf, ctx->key);
+    else {
+        aes_addRoundKey_cpy(buf + off, ctx->enckey, ctx->key);
+        ecb3 : for(i = 1, rcon = 1; i < 14; ++i) {
+            aes_subBytes(buf + off);
+            aes_shiftRows(buf + off);
+            aes_mixColumns(buf + off);
+            if( i & 1 ) {
+              aes_addRoundKey( buf + off, &ctx->key[16]);
+            } else {
+              rcon = aes_expandEncKey(ctx->key, rcon);
+              aes_addRoundKey(buf + off, ctx->key);
+            }
+        }
+        aes_subBytes(buf + off);
+        aes_shiftRows(buf + off);
+        aes_expandEncKey(ctx->key, rcon);
+        aes_addRoundKey(buf + off, ctx->key);
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+void aes256_encrypt_ecb(aes256_context *ctx, uint8_t k[32], uint8_t buf[DATA_LEN])
+{
 #ifdef DMA_MODE
-    dmaStore(&buf[0], 0, 16 * sizeof(uint8_t));
+    dmaLoad(&k[0], 0, 32 * sizeof(uint8_t));
+    dmaLoad(&buf[0], 0, DATA_LEN * sizeof(uint8_t));
+#endif
+
+    inner_loop(ctx, k, NULL, 0, 0);
+
+    for(size_t off = 0; off < DATA_LEN; off += 16) {
+        inner_loop(ctx, k, buf, off, 1);
+    }
+
+#ifdef DMA_MODE
+    dmaStore(&buf[0], 0, DATA_LEN * sizeof(uint8_t));
 #endif
 } /* aes256_encrypt */
 
