@@ -14,6 +14,7 @@ run: $(KERN) input.data check.data
 
 generate: $(FILES) generate.c
 	$(CC) $(CFLAGS) -I../../common -o generate $(SRCS) generate.c -lm
+	./generate
 
 hls: $(KERN).c $(KERN).h
 	vivado_hls hls.tcl
