@@ -50,6 +50,10 @@
 #include <algorithm>
 #include <list>
 
+#ifndef NTHREADS
+# define NTHREADS 8
+#endif
+
 const uint32_t nthreads = NTHREADS;
 
 
