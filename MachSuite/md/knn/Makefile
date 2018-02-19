@@ -26,7 +26,7 @@ ACCEL_NAME = md-knn
 TEST_BIN = $(ACCEL_NAME)
 export TRACE_OUTPUT_DIR=$(ACCEL_NAME)
 ifndef WORKLOAD
-  export WORKLOAD=md_kernel
+  export WORKLOAD=inner_loop
 endif
 include ../../common/Makefile.tracer
 include ../../common/Makefile.gem5
