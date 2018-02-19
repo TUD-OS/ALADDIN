@@ -12,7 +12,7 @@ SC 2008
 //Define input sizes
 #define height_size 32
 #define col_size 32
-#define row_size 16
+#define row_size 64
 //Data Bounds
 #define TYPE int32_t
 #define MAX 1000

@@ -26,7 +26,7 @@ ACCEL_NAME = stencil-stencil3d
 TEST_BIN = $(ACCEL_NAME)
 export TRACE_OUTPUT_DIR=$(ACCEL_NAME)
 ifndef WORKLOAD
-  export WORKLOAD=stencil3d
+  export WORKLOAD=inner_loop
 endif
 include ../../common/Makefile.tracer
 include ../../common/Makefile.gem5
