@@ -44,7 +44,7 @@ ifneq ($(DMA_MODE),)
 	CPPFLAGS += -DDMA_MODE -I$(ALADDIN_HOME)/gem5
 endif
 
-LLVM_VERSION = $(shell clang --version | grep -o -m 1 "[0-9\.]\+" | head -n 1)
+LLVM_VERSION = $(shell $(LLVM_HOME)/bin/clang --version | grep -o -m 1 "[0-9\.]\+" | head -n 1)
 LLVM_OBJS = $(patsubst %.c, %-opt.llvm, $(ALL_SRCS))
 
 #########################################################
@@ -55,22 +55,22 @@ labelmap: $(ALL_SRCS)
 	$(GET_LABELED_STMTS) $(ALL_SRCS) -- -I$(LLVM_HOME)/lib/clang/$(LLVM_VERSION)/include $(CPPFLAGS)
 
 full.llvm: $(LLVM_OBJS)
-	llvm-link -o $@ $^ $(LOGGER)
+	$(LLVM_HOME)/bin/llvm-link -o $@ $^ $(LOGGER)
 
 full.s: full.llvm
-	llc -O0 -disable-fp-elim -filetype=asm -o $@ $<
+	$(LLVM_HOME)/bin/llc -O0 -disable-fp-elim -filetype=asm -o $@ $<
 
 $(EXEC)-instrumented: full.s
 	$(CXX) -O0 -fno-inline -o $@ $< -lm -lz
 
 %-opt.llvm: %.c labelmap
-	clang -g -O1 -S -fno-slp-vectorize -fno-vectorize -fno-unroll-loops \
+	$(LLVM_HOME)/bin/clang -g -O1 -S -fno-slp-vectorize -fno-vectorize -fno-unroll-loops \
         -fno-inline -fno-builtin \
 				-emit-llvm \
 				$(CPPFLAGS) \
         $(BMARK_SPECIFIC_CFLAGS) \
         -o $*.llvm $<
-	opt -S -load=$(TRACER) -fulltrace -labelmapwriter $*.llvm -o $@
+	$(LLVM_HOME)/bin/opt -S -load=$(TRACER) -fulltrace -labelmapwriter $*.llvm -o $@
 
 clean-trace:
 	rm -rf $(COMMON_TEMP_DIR)

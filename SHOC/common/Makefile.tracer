@@ -45,7 +45,7 @@ ifneq ($(DMA_MODE),)
 endif
 
 LLVM_OBJS = $(patsubst %.c, %-opt.llvm, $(ALL_SRCS))
-LLVM_VERSION = $(shell clang --version | grep -o -m 1 "[0-9\.]\+" | head -n 1)
+LLVM_VERSION = $(shell $(LLVM_HOME)/bin/clang --version | grep -o -m 1 "[0-9\.]\+" | head -n 1)
 
 #########################################################
 #        INSTRUMENTATION AND TRACE FILE GENERATION      #
