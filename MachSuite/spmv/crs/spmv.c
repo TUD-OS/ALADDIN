@@ -9,9 +9,23 @@ http://www.cs.berkeley.edu/~mhoemmen/matrix-seminar/slides/UCB_sparse_tutorial_1
 #include "gem5/dma_interface.h"
 #endif
 
+void inner_loop(TYPE val[NNZ], int32_t cols[NNZ], int32_t rowDelimiters[N+1], TYPE vec[N], TYPE out[N], int i)
+{
+    int j;
+    TYPE Si, sum;
+
+    sum = 0; Si = 0;
+    int tmp_begin = rowDelimiters[i];
+    int tmp_end = rowDelimiters[i+1];
+    spmv_2 : for (j = tmp_begin; j < tmp_end; j++){
+        Si = val[j] * vec[cols[j]];
+        sum = sum + Si;
+    }
+    out[i] = sum;
+}
+
 void spmv(TYPE val[NNZ], int32_t cols[NNZ], int32_t rowDelimiters[N+1], TYPE vec[N], TYPE out[N]) {
-    int i, j;
-    TYPE sum, Si;
+    int i;
 
 #ifdef DMA_MODE
     dmaLoad(&rowDelimiters[0], 0, (N + 1) * sizeof(int32_t));
@@ -25,15 +39,9 @@ void spmv(TYPE val[NNZ], int32_t cols[NNZ], int32_t rowDelimiters[N+1], TYPE vec
 #endif
 
     spmv_1 : for(i = 0; i < N; i++){
-        sum = 0; Si = 0;
-        int tmp_begin = rowDelimiters[i];
-        int tmp_end = rowDelimiters[i+1];
-        spmv_2 : for (j = tmp_begin; j < tmp_end; j++){
-            Si = val[j] * vec[cols[j]];
-            sum = sum + Si;
-        }
-        out[i] = sum;
+        inner_loop(val, cols, rowDelimiters, vec, out, i);
     }
+
 #ifdef DMA_MODE
     dmaStore(&out[0], 0, N * sizeof(TYPE));
 #endif

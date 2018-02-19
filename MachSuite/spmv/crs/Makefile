@@ -14,7 +14,7 @@ run: $(KERN) input.data check.data
 
 generate: $(FILES) generate.c
 	$(CC) $(CFLAGS) -I../../common -o generate $(SRCS) generate.c
-	./generate
+	./generate large.mtx
 
 hls: $(KERN).c $(KERN).h
 	vivado_hls hls.tcl
@@ -26,7 +26,7 @@ ACCEL_NAME = spmv-crs
 TEST_BIN = $(ACCEL_NAME)
 export TRACE_OUTPUT_DIR=$(ACCEL_NAME)
 ifndef WORKLOAD
-  export WORKLOAD=spmv
+  export WORKLOAD=inner_loop
 endif
 include ../../common/Makefile.tracer
 include ../../common/Makefile.gem5

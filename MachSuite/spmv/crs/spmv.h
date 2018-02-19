@@ -8,8 +8,8 @@ http://www.cs.berkeley.edu/~mhoemmen/matrix-seminar/slides/UCB_sparse_tutorial_1
 #include "support.h"
 
 // These constants valid for the IEEE 494 bus interconnect matrix
-#define NNZ 1666
-#define N 494
+#define NNZ 39321
+#define N 2048
 
 #define TYPE double
 

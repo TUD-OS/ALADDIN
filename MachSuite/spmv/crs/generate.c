@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   struct prng_rand_t state;
 
   // Load matrix file
-  fd = open("494_bus_full.mtx", O_RDONLY);
+  fd = open(argv[1], O_RDONLY);
   assert( fd>=0 && "couldn't open matrix" );
   status = fstat( fd, &file_info );
   assert( status==0 && "couldn't get filesize of matrix" );
