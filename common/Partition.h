@@ -15,7 +15,7 @@
 /* This defines a Partition class for each partitioned scratchpad. */
 class Partition {
  public:
-  Partition() {
+  Partition() : data() {
     occupied_bw = 0;
     loads = 0;
     stores = 0;
