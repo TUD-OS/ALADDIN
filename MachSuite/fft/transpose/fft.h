@@ -10,6 +10,8 @@ V. Volkov and B. Kazian. Fitting fft onto the g80 architecture. 2008.
 
 #define TYPE double
 
+#define DATA_LEN    16384
+
 typedef struct complex_t {
         TYPE x;
         TYPE y;
@@ -19,12 +21,12 @@ typedef struct complex_t {
 #ifndef M_SQRT1_2
 #define M_SQRT1_2      0.70710678118654752440f
 #endif
-void fft1D_512(TYPE work_x[512], TYPE work_y[512]);
+void fft1D_512(TYPE work_x[DATA_LEN], TYPE work_y[DATA_LEN]);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Test harness interface code.
 
 struct bench_args_t {
-        TYPE work_x[512];
-        TYPE work_y[512];
+        TYPE work_x[DATA_LEN];
+        TYPE work_y[DATA_LEN];
 };

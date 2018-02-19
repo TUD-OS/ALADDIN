@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 
   // Fill data structure
   prng_srand(1,&state);
-  for(i=0; i<512; i++){
+  for(i=0; i<DATA_LEN; i++){
     data.work_x[i] = ((TYPE)prng_rand(&state))/((TYPE)PRNG_RAND_MAX);
     data.work_y[i] = ((TYPE)prng_rand(&state))/((TYPE)PRNG_RAND_MAX);
   }

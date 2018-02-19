@@ -26,9 +26,9 @@ void run_benchmark( void *vargs ) {
 
 /* Input format:
 %% Section 1
-TYPE[512]: signal (real part)
+TYPE[DATA_LEN]: signal (real part)
 %% Section 2
-TYPE[512]: signal (complex part)
+TYPE[DATA_LEN]: signal (complex part)
 */
 
 void input_to_data(int fd, void *vdata) {
@@ -38,27 +38,27 @@ void input_to_data(int fd, void *vdata) {
   p = readfile(fd);
 
   s = find_section_start(p,1);
-  STAC(parse_,TYPE,_array)(s, data->work_x, 512);
+  STAC(parse_,TYPE,_array)(s, data->work_x, DATA_LEN);
 
   s = find_section_start(p,2);
-  STAC(parse_,TYPE,_array)(s, data->work_y, 512);
+  STAC(parse_,TYPE,_array)(s, data->work_y, DATA_LEN);
 }
 
 void data_to_input(int fd, void *vdata) {
   struct bench_args_t *data = (struct bench_args_t *)vdata;
 
   write_section_header(fd);
-  STAC(write_,TYPE,_array)(fd, data->work_x, 512);
+  STAC(write_,TYPE,_array)(fd, data->work_x, DATA_LEN);
 
   write_section_header(fd);
-  STAC(write_,TYPE,_array)(fd, data->work_y, 512);
+  STAC(write_,TYPE,_array)(fd, data->work_y, DATA_LEN);
 }
 
 /* Output format:
 %% Section 1
-TYPE[512]: freq (real part)
+TYPE[DATA_LEN]: freq (real part)
 %% Section 2
-TYPE[512]: freq (complex part)
+TYPE[DATA_LEN]: freq (complex part)
 */
 
 void output_to_data(int fd, void *vdata) {
@@ -66,22 +66,22 @@ void output_to_data(int fd, void *vdata) {
   char *p, *s;
   // Load input string
   p = readfile(fd);
- 
+
   s = find_section_start(p,1);
-  STAC(parse_,TYPE,_array)(s, data->work_x, 512);
+  STAC(parse_,TYPE,_array)(s, data->work_x, DATA_LEN);
 
   s = find_section_start(p,2);
-  STAC(parse_,TYPE,_array)(s, data->work_y, 512);
+  STAC(parse_,TYPE,_array)(s, data->work_y, DATA_LEN);
 }
 
 void data_to_output(int fd, void *vdata) {
   struct bench_args_t *data = (struct bench_args_t *)vdata;
 
   write_section_header(fd);
-  STAC(write_,TYPE,_array)(fd, data->work_x, 512);
+  STAC(write_,TYPE,_array)(fd, data->work_x, DATA_LEN);
 
   write_section_header(fd);
-  STAC(write_,TYPE,_array)(fd, data->work_y, 512);
+  STAC(write_,TYPE,_array)(fd, data->work_y, DATA_LEN);
 }
 
 int check_data( void *vdata, void *vref ) {
@@ -91,7 +91,7 @@ int check_data( void *vdata, void *vref ) {
   int i;
   double real_diff, img_diff;
 
-  for(i=0; i<512; i++) {
+  for(i=0; i<DATA_LEN; i++) {
     real_diff = data->work_x[i] - ref->work_x[i];
     img_diff = data->work_y[i] - ref->work_y[i];
     has_errors |= (real_diff<-EPSILON) || (EPSILON<real_diff);

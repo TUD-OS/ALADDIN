@@ -114,44 +114,39 @@ void loady8(TYPE a_y[], TYPE x[], int offset, int sx){
     a_y[7] = x[7*sx+offset];
 }
 
-void fft1D_512(TYPE work_x[512], TYPE work_y[512]){
+void inner_loop(TYPE work_x[DATA_LEN], TYPE work_y[DATA_LEN],
+                TYPE DATA_x[THREADS*8], TYPE DATA_y[THREADS*8],
+                TYPE smem[8*8*9], size_t off, int loop) {
     int tid, hi, lo, stride;
     int reversed[] = {0,4,2,6,1,5,3,7};
-    TYPE DATA_x[THREADS*8];
-    TYPE DATA_y[THREADS*8];
+    int sx, offset;
 
     TYPE data_x[ 8 ];
     TYPE data_y[ 8 ];
 
-    TYPE smem[8*8*9];
-
-#ifdef DMA_MODE
-    dmaLoad(&work_x[0], 0, 512 * sizeof(TYPE));
-    dmaLoad(&work_y[0], 0, 512 * sizeof(TYPE));
-#endif
-
     stride = THREADS;
 
-    //Do it all at once...
-loop1 : for(tid = 0; tid < THREADS; tid++){
+    if(loop == 1) {
+        //Do it all at once...
+        loop1 : for(tid = 0; tid < THREADS; tid++){
             //GLOBAL_LOAD...
-            data_x[0] = work_x[0*stride+tid];
-            data_x[1] = work_x[1*stride+tid];
-            data_x[2] = work_x[2*stride+tid];
-            data_x[3] = work_x[3*stride+tid];
-            data_x[4] = work_x[4*stride+tid];
-            data_x[5] = work_x[5*stride+tid];
-            data_x[6] = work_x[6*stride+tid];
-            data_x[7] = work_x[7*stride+tid];
+            data_x[0] = work_x[off + 0*stride+tid];
+            data_x[1] = work_x[off + 1*stride+tid];
+            data_x[2] = work_x[off + 2*stride+tid];
+            data_x[3] = work_x[off + 3*stride+tid];
+            data_x[4] = work_x[off + 4*stride+tid];
+            data_x[5] = work_x[off + 5*stride+tid];
+            data_x[6] = work_x[off + 6*stride+tid];
+            data_x[7] = work_x[off + 7*stride+tid];
 
-            data_y[0] = work_y[0*stride+tid];
-            data_y[1] = work_y[1*stride+tid];
-            data_y[2] = work_y[2*stride+tid];
-            data_y[3] = work_y[3*stride+tid];
-            data_y[4] = work_y[4*stride+tid];
-            data_y[5] = work_y[5*stride+tid];
-            data_y[6] = work_y[6*stride+tid];
-            data_y[7] = work_y[7*stride+tid];
+            data_y[0] = work_y[off + 0*stride+tid];
+            data_y[1] = work_y[off + 1*stride+tid];
+            data_y[2] = work_y[off + 2*stride+tid];
+            data_y[3] = work_y[off + 3*stride+tid];
+            data_y[4] = work_y[off + 4*stride+tid];
+            data_y[5] = work_y[off + 5*stride+tid];
+            data_y[6] = work_y[off + 6*stride+tid];
+            data_y[7] = work_y[off + 7*stride+tid];
 
             //First 8 point FFT...
             FFT8(data_x, data_y);
@@ -178,9 +173,10 @@ loop1 : for(tid = 0; tid < THREADS; tid++){
             DATA_y[tid*8 + 6] = data_y[6];
             DATA_y[tid*8 + 7] = data_y[7];
         }
-        int sx, offset;
+    }
+    else if(loop == 2) {
         sx = 66;
-loop2 : for(tid = 0; tid < 64; tid++){
+        loop2 : for(tid = 0; tid < 64; tid++){
             hi = tid>>3;
             lo = tid&7;
             offset = hi*8+lo;
@@ -193,8 +189,10 @@ loop2 : for(tid = 0; tid < 64; tid++){
             smem[3*sx+offset] = DATA_x[tid*8 + 6];
             smem[7*sx+offset] = DATA_x[tid*8 + 7];
         }
+    }
+    else if(loop == 3) {
         sx = 8;
-loop3 : for(tid = 0; tid < 64; tid++){
+        loop3 : for(tid = 0; tid < 64; tid++){
             hi = tid>>3;
             lo = tid&7;
             offset = lo*66+hi;
@@ -208,9 +206,10 @@ loop3 : for(tid = 0; tid < 64; tid++){
             DATA_x[tid*8 +3] = smem[3*sx+offset];
             DATA_x[tid*8 +7] = smem[7*sx+offset];
         }
-
+    }
+    else if(loop == 4) {
         sx = 66;
-loop4 : for(tid = 0; tid < 64; tid++){
+        loop4 : for(tid = 0; tid < 64; tid++){
             hi = tid>>3;
             lo = tid&7;
             offset = hi*8+lo;
@@ -224,8 +223,9 @@ loop4 : for(tid = 0; tid < 64; tid++){
             smem[3*sx+offset] = DATA_y[tid*8 + 6];
             smem[7*sx+offset] = DATA_y[tid*8 + 7];
         }
-
-loop5 : for(tid = 0; tid < 64; tid++){
+    }
+    else if(loop == 5) {
+        loop5 : for(tid = 0; tid < 64; tid++){
             data_y[0] = DATA_y[tid*8 + 0];
             data_y[1] = DATA_y[tid*8 + 1];
             data_y[2] = DATA_y[tid*8 + 2];
@@ -249,8 +249,9 @@ loop5 : for(tid = 0; tid < 64; tid++){
             DATA_y[tid*8 + 6] = data_y[6];
             DATA_y[tid*8 + 7] = data_y[7];
         }
-
-loop6 : for(tid = 0; tid < 64; tid++){
+    }
+    else if(loop == 6) {
+        loop6 : for(tid = 0; tid < 64; tid++){
             data_x[0] = DATA_x[tid*8 + 0];
             data_x[1] = DATA_x[tid*8 + 1];
             data_x[2] = DATA_x[tid*8 + 2];
@@ -297,10 +298,11 @@ loop6 : for(tid = 0; tid < 64; tid++){
             DATA_y[tid*8 + 6] = data_y[6];
             DATA_y[tid*8 + 7] = data_y[7];
         }
-
+    }
+    else if(loop == 7) {
         //Transpose..
         sx = 72;
-loop7 : for(tid = 0; tid < 64; tid++){
+        loop7 : for(tid = 0; tid < 64; tid++){
             hi = tid>>3;
             lo = tid&7;
             offset = hi*8+lo;
@@ -313,9 +315,10 @@ loop7 : for(tid = 0; tid < 64; tid++){
             smem[3*sx+offset] = DATA_x[tid*8 + 6];
             smem[7*sx+offset] = DATA_x[tid*8 + 7];
         }
-
+    }
+    else if(loop == 8) {
         sx = 8;
-loop8 : for(tid = 0; tid < 64; tid++){
+        loop8 : for(tid = 0; tid < 64; tid++){
             hi = tid>>3;
             lo = tid&7;
             offset = hi*72+lo;
@@ -329,9 +332,10 @@ loop8 : for(tid = 0; tid < 64; tid++){
             DATA_x[tid*8 +3] = smem[3*sx+offset];
             DATA_x[tid*8 +7] = smem[7*sx+offset];
         }
-
+    }
+    else if(loop == 9) {
         sx = 72;
-loop9 : for(tid = 0; tid < 64; tid++){
+        loop9 : for(tid = 0; tid < 64; tid++){
             hi = tid>>3;
             lo = tid&7;
             offset = hi*8+lo;
@@ -345,8 +349,9 @@ loop9 : for(tid = 0; tid < 64; tid++){
             smem[3*sx+offset] = DATA_y[tid*8 + 6];
             smem[7*sx+offset] = DATA_y[tid*8 + 7];
         }
-
-loop10 : for(tid = 0; tid < 64; tid++){
+    }
+    else if(loop == 10) {
+        loop10 : for(tid = 0; tid < 64; tid++){
              data_y[0] = DATA_y[tid*8 + 0];
              data_y[1] = DATA_y[tid*8 + 1];
              data_y[2] = DATA_y[tid*8 + 2];
@@ -370,8 +375,9 @@ loop10 : for(tid = 0; tid < 64; tid++){
              DATA_y[tid*8 + 6] = data_y[6];
              DATA_y[tid*8 + 7] = data_y[7];
          }
-
-loop11 : for(tid = 0; tid < 64; tid++){
+     }
+     else {
+        loop11 : for(tid = 0; tid < 64; tid++){
              //Load post-trans
              data_y[0] = DATA_y[tid*8];
              data_y[1] = DATA_y[tid*8 + 1];
@@ -395,26 +401,47 @@ loop11 : for(tid = 0; tid < 64; tid++){
              FFT8(data_x, data_y);
 
              //Global store
-             work_x[0*stride+tid] = data_x[reversed[0]];
-             work_x[1*stride+tid] = data_x[reversed[1]];
-             work_x[2*stride+tid] = data_x[reversed[2]];
-             work_x[3*stride+tid] = data_x[reversed[3]];
-             work_x[4*stride+tid] = data_x[reversed[4]];
-             work_x[5*stride+tid] = data_x[reversed[5]];
-             work_x[6*stride+tid] = data_x[reversed[6]];
-             work_x[7*stride+tid] = data_x[reversed[7]];
+             work_x[off + 0*stride+tid] = data_x[reversed[0]];
+             work_x[off + 1*stride+tid] = data_x[reversed[1]];
+             work_x[off + 2*stride+tid] = data_x[reversed[2]];
+             work_x[off + 3*stride+tid] = data_x[reversed[3]];
+             work_x[off + 4*stride+tid] = data_x[reversed[4]];
+             work_x[off + 5*stride+tid] = data_x[reversed[5]];
+             work_x[off + 6*stride+tid] = data_x[reversed[6]];
+             work_x[off + 7*stride+tid] = data_x[reversed[7]];
 
-             work_y[0*stride+tid] = data_y[reversed[0]];
-             work_y[1*stride+tid] = data_y[reversed[1]];
-             work_y[2*stride+tid] = data_y[reversed[2]];
-             work_y[3*stride+tid] = data_y[reversed[3]];
-             work_y[4*stride+tid] = data_y[reversed[4]];
-             work_y[5*stride+tid] = data_y[reversed[5]];
-             work_y[6*stride+tid] = data_y[reversed[6]];
-             work_y[7*stride+tid] = data_y[reversed[7]];
+             work_y[off + 0*stride+tid] = data_y[reversed[0]];
+             work_y[off + 1*stride+tid] = data_y[reversed[1]];
+             work_y[off + 2*stride+tid] = data_y[reversed[2]];
+             work_y[off + 3*stride+tid] = data_y[reversed[3]];
+             work_y[off + 4*stride+tid] = data_y[reversed[4]];
+             work_y[off + 5*stride+tid] = data_y[reversed[5]];
+             work_y[off + 6*stride+tid] = data_y[reversed[6]];
+             work_y[off + 7*stride+tid] = data_y[reversed[7]];
          }
+     }
+}
+
+void fft1D_512(TYPE work_x[DATA_LEN], TYPE work_y[DATA_LEN]) {
+    TYPE DATA_x[THREADS*8];
+    TYPE DATA_y[THREADS*8];
+    TYPE smem[8*8*9];
+
 #ifdef DMA_MODE
-         dmaStore(&work_x[0], 0, 512 * sizeof(TYPE));
-         dmaStore(&work_y[0], 0, 512 * sizeof(TYPE));
+    dmaLoad(&work_x[0], 0, DATA_LEN * sizeof(TYPE));
+    dmaLoad(&work_y[0], 0, DATA_LEN * sizeof(TYPE));
+#endif
+
+    size_t off = 0;
+    while(off < DATA_LEN) {
+        for(int loop = 1; loop <= 11; loop++) {
+            inner_loop(work_x, work_y, DATA_x, DATA_y, smem, off, loop);
+        }
+        off += 512;
+    }
+
+#ifdef DMA_MODE
+     dmaStore(&work_x[0], 0, DATA_LEN * sizeof(TYPE));
+     dmaStore(&work_y[0], 0, DATA_LEN * sizeof(TYPE));
 #endif
 }
