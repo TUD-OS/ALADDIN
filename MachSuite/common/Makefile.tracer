@@ -61,7 +61,7 @@ full.s: full.llvm
 	$(LLVM_HOME)/bin/llc -O0 -disable-fp-elim -filetype=asm -o $@ $<
 
 $(EXEC)-instrumented: full.s
-	$(CXX) -O0 -fno-inline -o $@ $< -lm -lz
+	$(CXX) -O0 -fno-inline -o $@ $< -lm -lz -static
 
 %-opt.llvm: %.c labelmap
 	$(LLVM_HOME)/bin/clang -g -O1 -S -fno-slp-vectorize -fno-vectorize -fno-unroll-loops \
