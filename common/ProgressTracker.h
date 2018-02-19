@@ -35,7 +35,8 @@ class ProgressTracker {
                 const long _total,
                 const float _epoch_length,
                 bool overwrite=true)
-      : curr_total(_curr_total), epoch_length(_epoch_length), total(_total) {
+      : stats(), curr_total(_curr_total), last_pct_progress(), start(), end(),
+        epoch_length(_epoch_length), total(_total) {
     if (overwrite)
       file = fopen(filename.c_str(), "w");
     else
