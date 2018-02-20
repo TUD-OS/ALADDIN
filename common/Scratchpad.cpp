@@ -1,15 +1,15 @@
 #include "Scratchpad.h"
 
-Scratchpad::Scratchpad(
+AladdinScratchpad::AladdinScratchpad(
     unsigned ports_per_part, float cycle_time, bool _ready_mode) {
   num_ports = ports_per_part;
   cycleTime = cycle_time;
   ready_mode = _ready_mode;
 }
 
-Scratchpad::~Scratchpad() { clear(); }
+AladdinScratchpad::~AladdinScratchpad() { clear(); }
 
-void Scratchpad::clear() {
+void AladdinScratchpad::clear() {
   for (auto it = logical_arrays.begin(); it != logical_arrays.end(); ++it) {
     delete it->second;
   }
@@ -17,7 +17,7 @@ void Scratchpad::clear() {
 }
 
 // wordsize in bytes
-void Scratchpad::setScratchpad(std::string baseName,
+void AladdinScratchpad::setScratchpad(std::string baseName,
                                Addr base_addr,
                                PartitionType part_type,
                                unsigned part_factor,
@@ -30,12 +30,12 @@ void Scratchpad::setScratchpad(std::string baseName,
   logical_arrays[baseName] = curr_base;
 }
 
-void Scratchpad::step() {
+void AladdinScratchpad::step() {
   for (auto it = logical_arrays.begin(); it != logical_arrays.end(); ++it)
     it->second->step();
 }
 
-bool Scratchpad::partitionExist(std::string baseName) {
+bool AladdinScratchpad::partitionExist(std::string baseName) {
   auto partition_it = logical_arrays.find(baseName);
   if (partition_it != logical_arrays.end())
     return true;
@@ -43,7 +43,7 @@ bool Scratchpad::partitionExist(std::string baseName) {
     return false;
 }
 
-bool Scratchpad::canService() {
+bool AladdinScratchpad::canService() {
   for (auto it = logical_arrays.begin(); it != logical_arrays.end(); ++it) {
     if (it->second->canService())
       return true;
@@ -51,7 +51,7 @@ bool Scratchpad::canService() {
   return false;
 }
 
-bool Scratchpad::canServicePartition(std::string baseName,
+bool AladdinScratchpad::canServicePartition(std::string baseName,
                                      unsigned part_index,
                                      Addr addr,
                                      bool isLoad) {
@@ -59,7 +59,7 @@ bool Scratchpad::canServicePartition(std::string baseName,
 }
 
 // power in mW, energy in pJ, time in ns
-void Scratchpad::getAveragePower(unsigned int cycles,
+void AladdinScratchpad::getAveragePower(unsigned int cycles,
                                  float* avg_power,
                                  float* avg_dynamic,
                                  float* avg_leak) {
@@ -79,32 +79,32 @@ void Scratchpad::getAveragePower(unsigned int cycles,
   *avg_power = *avg_dynamic + *avg_leak;
 }
 
-float Scratchpad::getTotalArea() {
+float AladdinScratchpad::getTotalArea() {
   float mem_area = 0;
   for (auto it = logical_arrays.begin(); it != logical_arrays.end(); ++it)
     mem_area += it->second->getArea();
   return mem_area;
 }
 
-void Scratchpad::getMemoryBlocks(std::vector<std::string>& names) {
+void AladdinScratchpad::getMemoryBlocks(std::vector<std::string>& names) {
   for (auto it = logical_arrays.begin(); it != logical_arrays.end(); ++it) {
     names.push_back(it->first);
   }
 }
-void Scratchpad::increment_loads(std::string array_label, unsigned index) {
+void AladdinScratchpad::increment_loads(std::string array_label, unsigned index) {
   getLogicalArray(array_label)->increment_loads(index);
 }
 
-void Scratchpad::increment_stores(std::string array_label, unsigned index) {
+void AladdinScratchpad::increment_stores(std::string array_label, unsigned index) {
   getLogicalArray(array_label)->increment_stores(index);
 }
 
-void Scratchpad::increment_dma_loads(std::string array_label,
+void AladdinScratchpad::increment_dma_loads(std::string array_label,
                                      unsigned dma_size) {
   getLogicalArray(array_label)->increment_streaming_stores(dma_size);
 }
 
-void Scratchpad::increment_dma_stores(std::string array_label,
+void AladdinScratchpad::increment_dma_stores(std::string array_label,
                                       unsigned dma_size) {
   getLogicalArray(array_label)->increment_streaming_loads(dma_size);
 }

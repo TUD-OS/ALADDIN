@@ -16,10 +16,10 @@
  *   Partition      : Represents each partition of a scratchpad.
 */
 
-class Scratchpad {
+class AladdinScratchpad {
  public:
-  Scratchpad(unsigned p_ports_per_part, float cycle_time, bool ready_mode);
-  virtual ~Scratchpad();
+  AladdinScratchpad(unsigned p_ports_per_part, float cycle_time, bool ready_mode);
+  virtual ~AladdinScratchpad();
   void clear();
   void step();
   void setScratchpad(std::string baseName,

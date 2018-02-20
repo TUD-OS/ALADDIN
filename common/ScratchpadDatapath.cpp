@@ -17,7 +17,7 @@ ScratchpadDatapath::ScratchpadDatapath(std::string bench,
   std::cout << "-------------------------------" << std::endl;
   std::cout << "      Setting ScratchPad       " << std::endl;
   std::cout << "-------------------------------" << std::endl;
-  scratchpad = new Scratchpad(user_params.scratchpad_ports,
+  scratchpad = new AladdinScratchpad(user_params.scratchpad_ports,
                               user_params.cycle_time,
                               user_params.ready_mode);
   scratchpadCanService = true;
