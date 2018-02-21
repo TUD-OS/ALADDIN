@@ -33,7 +33,7 @@ class Gem5Datapath : public MemObject {
   virtual Event& getTickEvent() = 0;
 
   /* Build, optimize, register and prepare datapath for scheduling. */
-  virtual void initializeDatapath(int delay = 1) = 0;
+  virtual void initializeDatapath(int delay = 1, size_t trace_off = 0) = 0;
 
   /* Add the tick event to the gem5 event queue. */
   void scheduleOnEventQueue(unsigned delay_cycles = 1) {

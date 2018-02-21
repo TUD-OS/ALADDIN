@@ -42,7 +42,7 @@ class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
   ~HybridDatapath();
 
   // Build, optimize, register and prepare datapath for scheduling.
-  virtual void initializeDatapath(int delay = 1);
+  virtual void initializeDatapath(int delay = 1, size_t trace_off = 0);
 
   // Deletes all datapath state, including the TLB, but does not reset stats.
   virtual void clearDatapath();

@@ -129,7 +129,9 @@ void HybridDatapath::resetCounters() {
   dtb.resetCounters();
 }
 
-void HybridDatapath::initializeDatapath(int delay) {
+void HybridDatapath::initializeDatapath(int delay, size_t trace_off) {
+  current_trace_off = trace_off;
+
   // Don't reset stats - the user can reset them manually through the CPU
   // interface or by setting the --enable-stats-dump flag.
   ScratchpadDatapath::clearDatapath();
@@ -862,7 +864,7 @@ void HybridDatapath::addDmaNodeToIssueQueue(unsigned node_id) {
 
 void HybridDatapath::sendFinishedSignal() {
 #if SIGNAL_CONNECTOR
-  connector->signalFinished();
+  connector->signalFinished(current_trace_off);
 #else
   Request::Flags flags = 0;
   size_t size = 4;  // 32 bit integer.

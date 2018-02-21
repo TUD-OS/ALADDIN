@@ -735,6 +735,8 @@ size_t DDDG::build_initial_dddg(size_t trace_off, size_t trace_size) {
   trace_progress.add_stat("nodes", &num_of_instructions);
   trace_progress.add_stat("bytes", &current_trace_off);
 
+  gzseek(trace_file, trace_off, SEEK_SET);
+
   char buffer[256];
   std::string first_function;
   bool seen_first_line = false;
