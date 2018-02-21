@@ -814,7 +814,7 @@ size_t DDDG::build_initial_dddg(size_t trace_off, size_t trace_size) {
     std::cout << "Num of Control Edges: " << num_of_control_dependency()
               << std::endl;
     std::cout << "-------------------------------" << std::endl;
-    return static_cast<size_t>(current_trace_off);
+    return static_cast<size_t>(gztell(trace_file));
   } else {
     // The trace (or whatever was left) was empty.
     std::cout << "-------------------------------" << std::endl;
