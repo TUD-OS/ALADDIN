@@ -110,6 +110,9 @@ class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
   // Reset cache counters.
   void resetCacheCounters();
 
+  // Reset the accelerator into its initial state
+  virtual void reset();
+
   // Notify the CPU that the accelerator is finished.
   virtual void sendFinishedSignal();
 

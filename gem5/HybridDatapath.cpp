@@ -327,6 +327,11 @@ void HybridDatapath::markNodeStarted(ExecNode* node) {
   BaseDatapath::markNodeStarted(node);
 }
 
+void HybridDatapath::reset() {
+  if (tickEvent.scheduled())
+    deschedule(&tickEvent);
+}
+
 bool HybridDatapath::step() {
   executedNodesLastTrigger = executedNodes;
   resetCacheCounters();

@@ -35,6 +35,9 @@ class Gem5Datapath : public MemObject {
   /* Build, optimize, register and prepare datapath for scheduling. */
   virtual void initializeDatapath(int delay = 1, size_t trace_off = 0) = 0;
 
+  /* resets the accelerator into its initial state */
+  virtual void reset() = 0;
+
   /* Add the tick event to the gem5 event queue. */
   void scheduleOnEventQueue(unsigned delay_cycles = 1) {
     schedule(getTickEvent(), clockEdge(Cycles(delay_cycles)));
