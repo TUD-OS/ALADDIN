@@ -13,14 +13,20 @@ void run_benchmark( void *vargs ) {
   struct bench_args_t *args = (struct bench_args_t *)vargs;
 #ifdef GEM5_HARNESS
   mapArrayToAccelerator(
-      MACHSUITE_FFT_TRANSPOSE, "work_x", (void*)&args->work_x,
-      sizeof(args->work_x));
+      MACHSUITE_FFT_TRANSPOSE, "in_x", (void*)&args->in_x,
+      sizeof(args->in_x));
   mapArrayToAccelerator(
-      MACHSUITE_FFT_TRANSPOSE, "work_y", (void*)&args->work_y,
-      sizeof(args->work_y));
+      MACHSUITE_FFT_TRANSPOSE, "in_y", (void*)&args->in_y,
+      sizeof(args->in_y));
+  mapArrayToAccelerator(
+      MACHSUITE_FFT_TRANSPOSE, "out_x", (void*)&args->out_x,
+      sizeof(args->out_x));
+  mapArrayToAccelerator(
+      MACHSUITE_FFT_TRANSPOSE, "out_y", (void*)&args->out_y,
+      sizeof(args->out_y));
   invokeAcceleratorAndBlock(MACHSUITE_FFT_TRANSPOSE);
 #else
-  fft1D_512( args->work_x, args->work_y);
+  fft1D_512( args->in_x, args->in_y, args->out_x, args->out_y);
 #endif
 }
 
@@ -38,20 +44,20 @@ void input_to_data(int fd, void *vdata) {
   p = readfile(fd);
 
   s = find_section_start(p,1);
-  STAC(parse_,TYPE,_array)(s, data->work_x, DATA_LEN);
+  STAC(parse_,TYPE,_array)(s, data->in_x, DATA_LEN);
 
   s = find_section_start(p,2);
-  STAC(parse_,TYPE,_array)(s, data->work_y, DATA_LEN);
+  STAC(parse_,TYPE,_array)(s, data->in_y, DATA_LEN);
 }
 
 void data_to_input(int fd, void *vdata) {
   struct bench_args_t *data = (struct bench_args_t *)vdata;
 
   write_section_header(fd);
-  STAC(write_,TYPE,_array)(fd, data->work_x, DATA_LEN);
+  STAC(write_,TYPE,_array)(fd, data->in_x, DATA_LEN);
 
   write_section_header(fd);
-  STAC(write_,TYPE,_array)(fd, data->work_y, DATA_LEN);
+  STAC(write_,TYPE,_array)(fd, data->in_y, DATA_LEN);
 }
 
 /* Output format:
@@ -68,20 +74,20 @@ void output_to_data(int fd, void *vdata) {
   p = readfile(fd);
 
   s = find_section_start(p,1);
-  STAC(parse_,TYPE,_array)(s, data->work_x, DATA_LEN);
+  STAC(parse_,TYPE,_array)(s, data->out_x, DATA_LEN);
 
   s = find_section_start(p,2);
-  STAC(parse_,TYPE,_array)(s, data->work_y, DATA_LEN);
+  STAC(parse_,TYPE,_array)(s, data->out_y, DATA_LEN);
 }
 
 void data_to_output(int fd, void *vdata) {
   struct bench_args_t *data = (struct bench_args_t *)vdata;
 
   write_section_header(fd);
-  STAC(write_,TYPE,_array)(fd, data->work_x, DATA_LEN);
+  STAC(write_,TYPE,_array)(fd, data->out_x, DATA_LEN);
 
   write_section_header(fd);
-  STAC(write_,TYPE,_array)(fd, data->work_y, DATA_LEN);
+  STAC(write_,TYPE,_array)(fd, data->out_y, DATA_LEN);
 }
 
 int check_data( void *vdata, void *vref ) {
@@ -92,8 +98,8 @@ int check_data( void *vdata, void *vref ) {
   double real_diff, img_diff;
 
   for(i=0; i<DATA_LEN; i++) {
-    real_diff = data->work_x[i] - ref->work_x[i];
-    img_diff = data->work_y[i] - ref->work_y[i];
+    real_diff = data->out_x[i] - ref->out_x[i];
+    img_diff = data->out_y[i] - ref->out_y[i];
     has_errors |= (real_diff<-EPSILON) || (EPSILON<real_diff);
     //if( has_errors )
       //printf("%d (real): %f (%f)\n", i, real_diff, EPSILON);
