@@ -79,7 +79,7 @@ $(EXE): obj_dir $(CACTI_OBJ_FILES) $(OBJ_FILES)
 	$(CXX)  $(BITWIDTH) -o $(EXE) $(EXE).o $(OBJ_FILES) $(CACTI_OBJ_FILES) $(LFLAGS)
 
 $(OBJ_DIR)/%.o : %.h %.cpp
-	$(CXX) $(CFLAGS) -Werror -Wall $(WARNING_EXCEPTIONS) -o $@ -c $*.cpp
+	$(CXX) $(CFLAGS) -Wall $(WARNING_EXCEPTIONS) -o $@ -c $*.cpp
 
 $(CACTI_OBJ_DIR)/%.o : $(CACTI_DIR)/%.cc
 	$(CXX) $(CFLAGS)  -DNTHREADS=$(NTHREADS) -o $@ -c $(CACTI_DIR)/$*.cc
