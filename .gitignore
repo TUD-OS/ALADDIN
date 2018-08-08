@@ -2,6 +2,7 @@
 
 /SHOC/bb_gemm/bb_gemm
 /SHOC/fft/fft
+/SHOC/fft2d/fft2d
 /SHOC/md/md
 /SHOC/pp_scan/pp_scan
 /SHOC/reduction/reduction
@@ -12,6 +13,7 @@
 
 /SHOC/sha256/explore
 /SHOC/triad/output.data
+/SHOC/convol/explore
 
 /SHOC/*/*-instrumented
 /SHOC/*/labelmap

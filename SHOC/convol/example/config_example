@@ -1,0 +1,6 @@
+partition,cyclic,data,2048,8,2
+partition,cyclic,kern,2048,8,2
+unrolling,convol,loop1,1
+unrolling,convol,loop2,32
+pipelining,1
+cycle_time,10
