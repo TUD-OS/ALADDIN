@@ -54,10 +54,12 @@ bool BaseDatapath::buildDddg() {
   if (current_trace_off == DDDG::END_OF_TRACE)
     return false;
 
-  std::cout << "-------------------------------" << std::endl;
-  std::cout << "    Initializing BaseDatapath      " << std::endl;
-  std::cout << "-------------------------------" << std::endl;
-  std::cout << " Top level: " << topLevelFunctionName << std::endl;
+  if (VERBOSE) {
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "    Initializing BaseDatapath      " << std::endl;
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << " Top level: " << topLevelFunctionName << std::endl;
+  }
   numTotalNodes = program.nodes.size();
   beginNodeId = program.nodes.begin()->first;
   endNodeId = (--program.nodes.end())->first + 1;
@@ -810,9 +812,11 @@ void BaseDatapath::writeOtherStats() {
 // stepFunctions
 // multiple function, each function is a separate graph
 void BaseDatapath::prepareForScheduling() {
-  std::cout << "=============================================" << std::endl;
-  std::cout << "      Scheduling...            " << benchName << std::endl;
-  std::cout << "=============================================" << std::endl;
+  if (VERBOSE) {
+    std::cout << "=============================================" << std::endl;
+    std::cout << "      Scheduling...            " << benchName << std::endl;
+    std::cout << "=============================================" << std::endl;
+  }
 
   edgeToParid = get(boost::edge_name, program.graph);
 
@@ -832,9 +836,12 @@ void BaseDatapath::prepareForScheduling() {
       totalConnectedNodes++;
     }
   }
-  std::cout << "  Total connected nodes: " << totalConnectedNodes << "\n";
-  std::cout << "  Total edges: " << numTotalEdges << "\n";
-  std::cout << "=============================================" << std::endl;
+
+  if (VERBOSE) {
+    std::cout << "  Total connected nodes: " << totalConnectedNodes << "\n";
+    std::cout << "  Total edges: " << numTotalEdges << "\n";
+    std::cout << "=============================================" << std::endl;
+  }
 
   executingQueue.clear();
   readyToExecuteQueue.clear();

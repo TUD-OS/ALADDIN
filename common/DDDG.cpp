@@ -722,9 +722,11 @@ bool DDDG::is_function_returned(const std::string& line, std::string target_func
 
 size_t DDDG::build_initial_dddg(size_t trace_off, size_t trace_size) {
 
-  std::cout << "-------------------------------" << std::endl;
-  std::cout << "      Generating DDDG          " << std::endl;
-  std::cout << "-------------------------------" << std::endl;
+  if (VERBOSE) {
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "      Generating DDDG          " << std::endl;
+    std::cout << "-------------------------------" << std::endl;
+  }
 
   long current_trace_off = trace_off;
   // Bigger traces would benefit from having a finer progress report.
@@ -804,22 +806,26 @@ size_t DDDG::build_initial_dddg(size_t trace_off, size_t trace_size) {
   if (seen_first_line) {
     output_dddg();
 
-    std::cout << "-------------------------------" << std::endl;
-    std::cout << "Num of Nodes: " << program->getNumNodes() << std::endl;
-    std::cout << "Num of Edges: " << program->getNumEdges() << std::endl;
-    std::cout << "Num of Reg Edges: " << num_of_register_dependency()
-              << std::endl;
-    std::cout << "Num of MEM Edges: " << num_of_memory_dependency()
-              << std::endl;
-    std::cout << "Num of Control Edges: " << num_of_control_dependency()
-              << std::endl;
-    std::cout << "-------------------------------" << std::endl;
+    if (VERBOSE) {
+      std::cout << "-------------------------------" << std::endl;
+      std::cout << "Num of Nodes: " << program->getNumNodes() << std::endl;
+      std::cout << "Num of Edges: " << program->getNumEdges() << std::endl;
+      std::cout << "Num of Reg Edges: " << num_of_register_dependency()
+                << std::endl;
+      std::cout << "Num of MEM Edges: " << num_of_memory_dependency()
+                << std::endl;
+      std::cout << "Num of Control Edges: " << num_of_control_dependency()
+                << std::endl;
+      std::cout << "-------------------------------" << std::endl;
+    }
     return static_cast<size_t>(gztell(trace_file));
   } else {
     // The trace (or whatever was left) was empty.
-    std::cout << "-------------------------------" << std::endl;
-    std::cout << "Reached end of trace." << std::endl;
-    std::cout << "-------------------------------" << std::endl;
+    if (VERBOSE) {
+      std::cout << "-------------------------------" << std::endl;
+      std::cout << "Reached end of trace." << std::endl;
+      std::cout << "-------------------------------" << std::endl;
+    }
     return END_OF_TRACE;
   }
 }

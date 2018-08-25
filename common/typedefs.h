@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#define VERBOSE     0
+
 typedef uint64_t Addr;
 
 // Typedefs for Boost::Graph.

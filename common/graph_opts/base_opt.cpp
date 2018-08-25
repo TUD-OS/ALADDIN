@@ -9,10 +9,12 @@
 #include "../typedefs.h"
 
 void BaseAladdinOpt::run() {
-  static const std::string boundary = "-------------------------------";
-  std::cout << boundary << "\n"
-            << getCenteredName(boundary.size()) << "\n"
-            << boundary << "\n";
+  if (VERBOSE) {
+    static const std::string boundary = "-------------------------------";
+    std::cout << boundary << "\n"
+              << getCenteredName(boundary.size()) << "\n"
+              << boundary << "\n";
+  }
   optimize();
 }
 
@@ -33,7 +35,8 @@ bool BaseAladdinOpt::doesEdgeExist(Vertex from, Vertex to) {
 
 void BaseAladdinOpt::updateGraphWithNewEdges(
     std::vector<NewEdge>& to_add_edges) {
-  std::cout << "  Adding " << to_add_edges.size() << " new edges.\n";
+  if (VERBOSE)
+    std::cout << "  Adding " << to_add_edges.size() << " new edges.\n";
   for (auto it = to_add_edges.begin(); it != to_add_edges.end(); ++it) {
     if (*it->from != *it->to && !doesEdgeExist(it->from, it->to)) {
       get(boost::edge_name,
@@ -44,7 +47,8 @@ void BaseAladdinOpt::updateGraphWithNewEdges(
 }
 void BaseAladdinOpt::updateGraphWithIsolatedNodes(
     std::vector<unsigned>& to_remove_nodes) {
-  std::cout << "  Removing " << to_remove_nodes.size() << " isolated nodes.\n";
+  if (VERBOSE)
+    std::cout << "  Removing " << to_remove_nodes.size() << " isolated nodes.\n";
   for (auto it = to_remove_nodes.begin(); it != to_remove_nodes.end(); ++it) {
     clear_vertex(exec_nodes.at(*it)->get_vertex(), graph);
   }
@@ -52,7 +56,8 @@ void BaseAladdinOpt::updateGraphWithIsolatedNodes(
 
 void BaseAladdinOpt::updateGraphWithIsolatedEdges(
     std::set<Edge>& to_remove_edges) {
-  std::cout << "  Removing " << to_remove_edges.size() << " edges.\n";
+  if (VERBOSE)
+    std::cout << "  Removing " << to_remove_edges.size() << " edges.\n";
   for (auto it = to_remove_edges.begin(), E = to_remove_edges.end(); it != E;
        ++it)
     remove_edge(source(*it, graph), target(*it, graph), graph);

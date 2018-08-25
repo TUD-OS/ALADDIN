@@ -14,9 +14,11 @@ ScratchpadDatapath::ScratchpadDatapath(std::string bench,
                                        std::string config_file)
     : BaseDatapath(bench, trace_file, config_file),
       cycle_time(user_params.cycle_time) {
-  std::cout << "-------------------------------" << std::endl;
-  std::cout << "      Setting ScratchPad       " << std::endl;
-  std::cout << "-------------------------------" << std::endl;
+  if (VERBOSE) {
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "      Setting ScratchPad       " << std::endl;
+    std::cout << "-------------------------------" << std::endl;
+  }
   scratchpad = new AladdinScratchpad(user_params.scratchpad_ports,
                               user_params.cycle_time,
                               user_params.ready_mode);
@@ -32,9 +34,11 @@ void ScratchpadDatapath::clearDatapath() {
 }
 
 void ScratchpadDatapath::globalOptimizationPass() {
-  std::cout << "=============================================" << std::endl;
-  std::cout << "      Optimizing...            " << benchName << std::endl;
-  std::cout << "=============================================" << std::endl;
+  if (VERBOSE) {
+    std::cout << "=============================================" << std::endl;
+    std::cout << "      Optimizing...            " << benchName << std::endl;
+    std::cout << "=============================================" << std::endl;
+  }
   // Node removals must come first.
   removePhiNodes();
   /* memoryAmbiguation() should execute after removeInductionDependence()
@@ -94,9 +98,11 @@ void ScratchpadDatapath::completePartition() {
   if (!user_params.partition.size())
     return;
 
-  std::cout << "-------------------------------" << std::endl;
-  std::cout << "        Mem to Reg Conv        " << std::endl;
-  std::cout << "-------------------------------" << std::endl;
+  if (VERBOSE) {
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "        Mem to Reg Conv        " << std::endl;
+    std::cout << "-------------------------------" << std::endl;
+  }
 
   for (auto it = user_params.partition.begin();
        it != user_params.partition.end();
@@ -119,9 +125,11 @@ void ScratchpadDatapath::scratchpadPartition() {
   if (!user_params.partition.size())
     return;
 
-  std::cout << "-------------------------------" << std::endl;
-  std::cout << "      ScratchPad Partition     " << std::endl;
-  std::cout << "-------------------------------" << std::endl;
+  if (VERBOSE) {
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << "      ScratchPad Partition     " << std::endl;
+    std::cout << "-------------------------------" << std::endl;
+  }
   std::string bn(benchName);
 
   bool spad_partition = false;
