@@ -58,9 +58,10 @@ class MemoryQueue {
               int _bandwidth,
               int _cache_line_size,
               std::string _cacti_config)
-      : issuedThisCycle(0), size(_size), bandwidth(_bandwidth),
+      : size(_size), bandwidth(_bandwidth),
         cache_line_size(_cache_line_size), cacti_config(_cacti_config),
-        readEnergy(0), writeEnergy(0), leakagePower(0), area(0) {}
+        readEnergy(0), writeEnergy(0), leakagePower(0), area(0),
+        issuedThisCycle(0) {}
 
   void initStats(std::string _name) {
     name = _name;

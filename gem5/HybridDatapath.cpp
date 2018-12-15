@@ -8,7 +8,6 @@
 #include "base/flags.hh"
 #include "base/trace.hh"
 #include "base/types.hh"
-#include "base/misc.hh"
 #include "dev/dma_device.hh"
 #include "mem/mem_object.hh"
 #include "mem/packet.hh"
@@ -44,13 +43,13 @@ HybridDatapath::HybridDatapath(const HybridDatapathParams* params)
                params->dmaChunkSize,
                params->numDmaChannels,
                params->invalidateOnDmaStore),
-      spadMasterId(params->system->getMasterId(name() + ".spad")),
+      spadMasterId(params->system->getMasterId(this, name() + ".spad")),
 #endif
       connector(params->connector),
       cachePort(this, "cache_port"),
-      cacheMasterId(params->system->getMasterId(name() + ".cache")),
+      cacheMasterId(params->system->getMasterId(this, name() + ".cache")),
       acpPort(this, "acp_port"),
-      acpMasterId(params->system->getMasterId(name() + ".acp")),
+      acpMasterId(params->system->getMasterId(this, name() + ".acp")),
       cache_queue(params->cacheQueueSize,
                   params->cacheBandwidth,
                   system->cacheLineSize(),
@@ -927,7 +926,6 @@ bool HybridDatapath::CachePort::recvTimingResp(PacketPtr pkt) {
             pkt->getAddr());
   }
   delete state;
-  delete pkt->req;
   delete pkt;
 
   return true;
@@ -956,7 +954,6 @@ AladdinTLBResponse HybridDatapath::getAddressTranslation(
   // return it.
   AladdinTLBResponse translation = *data_pkt->getPtr<AladdinTLBResponse>();
 
-  delete data_pkt->req;
   delete data_pkt->popSenderState();
   delete data_pkt;
   return translation;
@@ -966,7 +963,7 @@ PacketPtr HybridDatapath::createTLBRequestPacket(
     Addr trace_addr, unsigned size, bool isLoad, SrcTypes::Variable* var) {
   Request::Flags flags = 0;
   // Constructor for physical request only
-  Request* req = new Request(trace_addr, size, flags, getCacheMasterId());
+  RequestPtr req = std::make_shared<Request>(trace_addr, size, flags, getCacheMasterId());
   MemCmd command = isLoad ? MemCmd::ReadReq : MemCmd::WriteReq;
   PacketPtr data_pkt = new Packet(req, command);
 
@@ -1009,7 +1006,6 @@ void HybridDatapath::completeTLBRequest(PacketPtr pkt, bool was_miss) {
         HybridDatapath, "Translated: vaddr = %#x, paddr = %#x\n", vaddr, paddr);
   }
   delete state;
-  delete pkt->req;
   delete pkt;
 }
 
@@ -1059,7 +1055,7 @@ HybridDatapath::IssueResult HybridDatapath::issueCacheOrAcpRequest(
    * node.  */
   DynamicInstruction inst = program.nodes.at(node_id)->get_dynamic_instruction();
   Addr pc = static_cast<Addr>(std::hash<DynamicInstruction>()(inst));
-  Request* req = new Request(paddr, size, flags, id, curTick(), pc);
+  RequestPtr req = std::make_shared<Request>(paddr, size, flags, id, curTick(), pc);
   /* The context id and thread ids are needed to pass a few assert checks in
    * gem5, but they aren't actually required for the mechanics of the memory
    * checking itself. This has to be set outside of the constructor or the
@@ -1098,11 +1094,11 @@ HybridDatapath::IssueResult HybridDatapath::issueOwnershipRequest(
   paddr = toCacheLineAddr(paddr);
   size = cacheLineSize;
 
-  Request* req = NULL;
+  RequestPtr req;
   Request::Flags flags = 0;
   DynamicInstruction inst = program.nodes.at(node_id)->get_dynamic_instruction();
   Addr pc = static_cast<Addr>(std::hash<DynamicInstruction>()(inst));
-  req = new Request(paddr, size, flags, getAcpMasterId(), curTick(), pc);
+  req = std::make_shared<Request>(paddr, size, flags, getAcpMasterId(), curTick(), pc);
   req->setContext(context_id);
 
   // The command that comes closest to emulating ACP behavior is ReadExReq,
