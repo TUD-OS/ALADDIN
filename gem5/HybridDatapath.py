@@ -1,5 +1,5 @@
 from m5.params import *
-from m5.objects import CommMonitor, Cache, MemTraceProbe
+from m5.objects import CommMonitor, Cache #, MemTraceProbe
 from MemObject import MemObject
 from m5.proxy import *
 from Cache import *
@@ -104,7 +104,7 @@ class HybridDatapath(MemObject):
     """ Connect the master and slave port through a CommMonitor. """
     trace_file_name = "%s.%s.gz" % (self.benchName, monitor_name)
     monitor = CommMonitor.CommMonitor()
-    monitor.trace = MemTraceProbe.MemTraceProbe(trace_file=trace_file_name)
+    # monitor.trace = MemTraceProbe.MemTraceProbe(trace_file=trace_file_name)
     monitor.slave = master_port
     monitor.master = slave_port
     setattr(self, monitor_name, monitor)
