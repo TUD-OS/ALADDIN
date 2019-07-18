@@ -87,7 +87,7 @@ class HybridDatapath : public ScratchpadDatapath, public Gem5Datapath {
    *
    * @return a reference to the port with the given name
    */
-  BaseMasterPort& getMasterPort(const std::string& if_name,
+  Port& getPort(const std::string& if_name,
                                 PortID idx = InvalidPortID);
 
   /* Wrapper function for the real step() function to match EventWrapper

@@ -160,7 +160,7 @@ void HybridDatapath::startDatapathScheduling(int delay) {
   scheduleOnEventQueue(delay);
 }
 
-BaseMasterPort& HybridDatapath::getMasterPort(const std::string& if_name,
+Port& HybridDatapath::getPort(const std::string& if_name,
                                               PortID idx) {
 #if DMA_SUPPORT
   if (if_name == "spad_port")
@@ -172,7 +172,7 @@ BaseMasterPort& HybridDatapath::getMasterPort(const std::string& if_name,
   else if (if_name == "acp_port")
     return getAcpPort();
   else
-    return MemObject::getMasterPort(if_name);
+    return SimObject::getPort(if_name);
 }
 
 void HybridDatapath::insertTLBEntry(Addr vaddr, Addr paddr) {
